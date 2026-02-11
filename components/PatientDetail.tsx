@@ -336,9 +336,121 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
 
         <div class="print-section">
           <h2 style="margin: 0 0 15px 0; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #2d6e2d; padding-bottom: 5px;">
-            👤 Patient Information
+            � Clinical Summary
+          </h2>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+              <div>
+                <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">🎯 Primary Complaint</div>
+                <div style="font-weight: bold;">${patient.symptoms.hasJointPain}</div>
+              </div>
+              <div>
+                <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">⏱️ Pain Duration</div>
+                <div style="font-weight: bold;">${patient.symptoms.painDuration}</div>
+              </div>
+              <div>
+                <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">📈 Pain Intensity</div>
+                <div style="font-weight: bold;">${patient.symptoms.painIntensity}/10 (${patient.symptoms.painIntensity <= 3 ? 'Mild' : patient.symptoms.painIntensity <= 6 ? 'Moderate' : 'Severe'})</div>
+              </div>
+              <div>
+                <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">🌅 Pain Onset</div>
+                <div style="font-weight: bold;">${patient.symptoms.painOnset}</div>
+              </div>
+            </div>
+            <div style="margin-top: 10px;">
+              <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">🔍 Pain Characteristics</div>
+              <div style="font-weight: bold;">${patient.symptoms.painTypes.length > 0 ? patient.symptoms.painTypes.join(', ') : 'No specific pain types reported'}</div>
+            </div>
+            <div style="margin-top: 10px;">
+              <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">🦴 Affected Joints (${patient.affectedJoints.length} total)</div>
+              <div style="font-weight: bold;">${patient.affectedJoints.length > 0 ? patient.affectedJoints.join(', ') : 'No joints specified'}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="print-section">
+          <h2 style="margin: 0 0 15px 0; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #2d6e2d; padding-bottom: 5px;">
+            💊 Treatment Recommendations
+          </h2>
+          <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 15px;">
+            <div style="margin-bottom: 12px;">
+              <div style="font-weight: bold; color: #0369a1; margin-bottom: 5px;">🌿 Ayurvedic Management:</div>
+              <ul style="margin: 0; padding-left: 20px; font-size: 10pt;">
+                <li>${diagnosis.isPositive ? 'Panchakarma therapy recommended' : 'Lifestyle modifications advised'}</li>
+                <li>${diagnosis.isPositive ? 'Vata-pacifying herbs' : 'Preventive measures'}</li>
+                <li>${diagnosis.isPositive ? 'External therapies (Abhyanga, Swedana)' : 'Regular exercise program'}</li>
+                <li>${diagnosis.isPositive ? 'Dietary modifications' : 'Joint care education'}</li>
+              </ul>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <div style="font-weight: bold; color: #0369a1; margin-bottom: 5px;">🏥 Conventional Care:</div>
+              <ul style="margin: 0; padding-left: 20px; font-size: 10pt;">
+                <li>${patient.symptoms.painIntensity > 6 ? 'Pain management consultation' : 'Regular monitoring'}</li>
+                <li>${patient.symptoms.swelling !== 'Never' ? 'Anti-inflammatory therapy' : 'Symptom tracking'}</li>
+                <li>${patient.symptoms.stiffness === 'Yes' ? 'Physical therapy referral' : 'Range of motion exercises'}</li>
+                <li>${diagnosis.isPositive ? 'Regular follow-up appointments' : 'Annual check-ups'}</li>
+              </ul>
+            </div>
+            <div>
+              <div style="font-weight: bold; color: #0369a1; margin-bottom: 5px;">📅 Follow-up Schedule:</div>
+              <div style="font-size: 10pt;">
+                ${diagnosis.isPositive ? 'Review in 2 weeks, then monthly for 3 months' : 'Review in 1 month, then as needed'}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="print-section">
+          <h2 style="margin: 0 0 15px 0; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #2d6e2d; padding-bottom: 5px;">
+            🚨 Risk Assessment & Prognosis
+          </h2>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px;">
+              <div style="font-weight: bold; color: #92400e; margin-bottom: 8px;">⚠️ Risk Factors:</div>
+              <ul style="margin: 0; padding-left: 15px; font-size: 9pt;">
+                ${patient.symptoms.painIntensity > 6 ? '<li>Severe pain intensity</li>' : ''}
+                ${patient.symptoms.swelling !== 'Never' ? '<li>Persistent swelling</li>' : ''}
+                ${patient.symptoms.stiffness === 'Yes' ? '<li>Morning stiffness</li>' : ''}
+                ${patient.affectedJoints.includes('Knee') || patient.affectedJoints.includes('Hip') ? '<li>Weight-bearing joints affected</li>' : ''}
+                ${parseInt(String(patient.demographics.age)) > 60 ? '<li>Advanced age</li>' : ''}
+                ${!diagnosis.isPositive ? '<li>Early stage presentation</li>' : '<li>Multiple joint involvement</li>'}
+              </ul>
+            </div>
+            <div style="background: #dcfce7; border: 1px solid #22c55e; border-radius: 8px; padding: 12px;">
+              <div style="font-weight: bold; color: #166534; margin-bottom: 8px;">✅ Prognosis:</div>
+              <div style="font-size: 9pt; line-height: 1.4;">
+                ${diagnosis.isPositive 
+                  ? 'With appropriate treatment, significant improvement expected within 3-6 months. Regular follow-up essential for optimal outcomes.'
+                  : 'Good prognosis with conservative management. Early intervention can prevent progression to full Sandhigata Vata.'}
+              </div>
+              <div style="margin-top: 8px; font-size: 9pt;">
+                <strong>Recovery Timeline:</strong> ${diagnosis.isPositive ? '6-12 months' : '3-6 months'}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="print-section">
+          <h2 style="margin: 0 0 15px 0; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #2d6e2d; padding-bottom: 5px;">
+            �� Patient Information
           </h2>
           <div class="print-grid">
+            <div>
+              <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">👤 Full Name</div>
+              <div style="font-weight: bold;">${patient.demographics.name}</div>
+            </div>
+            <div>
+              <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">🎂 Age</div>
+              <div style="font-weight: bold;">${patient.demographics.age} Years (${parseInt(String(patient.demographics.age)) < 30 ? 'Young Adult' : parseInt(String(patient.demographics.age)) < 50 ? 'Adult' : parseInt(String(patient.demographics.age)) < 65 ? 'Middle-aged' : 'Senior'})</div>
+            </div>
+            <div>
+              <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">⚧ Gender</div>
+              <div style="font-weight: bold;">${patient.demographics.gender}</div>
+            </div>
+            <div>
+              <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">🆔 Patient ID</div>
+              <div style="font-weight: bold;">${patient.demographics.opdIpdNo || 'N/A'}</div>
+            </div>
             <div>
               <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">📍 Address</div>
               <div style="font-weight: bold;">${patient.demographics.address || 'N/A'}</div>
@@ -353,7 +465,39 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
             </div>
             <div>
               <div style="font-size: 10pt; color: #666; margin-bottom: 3px;">📅 Assessment Date</div>
-              <div style="font-weight: bold;">${new Date(patient.createdAt).toLocaleDateString()}</div>
+              <div style="font-weight: bold;">${new Date(patient.createdAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="print-section">
+          <h2 style="margin: 0 0 15px 0; font-size: 14pt; font-weight: bold; border-bottom: 2px solid #2d6e2d; padding-bottom: 5px;">
+            📝 Assessment Notes
+          </h2>
+          <div style="background: #fafafa; border: 1px solid #d4d4d4; border-radius: 8px; padding: 15px;">
+            <div style="margin-bottom: 10px;">
+              <div style="font-weight: bold; margin-bottom: 5px;">Clinical Observations:</div>
+              <div style="font-size: 10pt; line-height: 1.4;">
+                ${diagnosis.isPositive 
+                  ? `Patient presents with ${patient.symptoms.painIntensity <= 3 ? 'mild' : patient.symptoms.painIntensity <= 6 ? 'moderate' : 'severe'} joint pain affecting ${patient.affectedJoints.length} joint(s). ${patient.symptoms.swelling !== 'Never' ? 'Evidence of inflammatory response present. ' : ''}${patient.symptoms.stiffness === 'Yes' ? 'Morning stiffness reported. ' : ''}Clinical findings consistent with Sandhigata Vata diagnosis.`
+                  : `Patient reports ${patient.symptoms.painIntensity <= 3 ? 'mild' : patient.symptoms.painIntensity <= 6 ? 'moderate' : 'severe'} joint symptoms but does not meet full diagnostic criteria for Sandhigata Vata. ${diagnosis.reasons.length > 0 ? 'Key criteria not met: ' + diagnosis.reasons.join(', ') + '. ' : ''}Recommend conservative management and monitoring.`}
+              </div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <div style="font-weight: bold; margin-bottom: 5px;">Functional Impact:</div>
+              <div style="font-size: 10pt; line-height: 1.4;">
+                ${patient.symptoms.painIntensity > 6 ? 'Significant impact on daily activities and quality of life. Work capacity may be affected.' : 
+                  patient.symptoms.painIntensity > 3 ? 'Moderate impact on daily activities. Most functions preserved.' : 
+                  'Minimal impact on daily activities. Good functional capacity maintained.'}
+              </div>
+            </div>
+            <div>
+              <div style="font-weight: bold; margin-bottom: 5px;">Next Steps:</div>
+              <div style="font-size: 10pt; line-height: 1.4;">
+                ${diagnosis.isPositive 
+                  ? 'Initiate comprehensive treatment plan including Ayurvedic therapies, lifestyle modifications, and regular follow-up. Monitor response to treatment and adjust as needed.'
+                  : 'Implement preventive measures and lifestyle modifications. Schedule follow-up assessment to monitor progression. Educate on early warning signs.'}
+              </div>
             </div>
           </div>
         </div>
