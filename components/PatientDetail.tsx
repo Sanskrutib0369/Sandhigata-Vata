@@ -2,8 +2,33 @@ import React from 'react';
 import { Patient } from '../types';
 import BodyMap from './BodyMap';
 import VasScale from './VasScale';
-import { ArrowLeft, User, Printer, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, User, Printer as PrinterIcon, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import { checkCriteria } from '../services/diagnosisService';
+
+const printStyles = `
+  @media print {
+    .print-hide {
+      display: none !important;
+    }
+    body {
+      font-size: 12px;
+    }
+    h1 {
+      font-size: 24px !important;
+    }
+    h2 {
+      font-size: 18px !important;
+    }
+    h3 {
+      font-size: 16px !important;
+    }
+    .max-w-5xl {
+      max-width: none !important;
+    }
+  }
+`;
+
+const PrintStyles = () => <style dangerouslySetInnerHTML={{ __html: printStyles }} />;
 
 interface PatientDetailProps {
   patient: Patient;
@@ -13,6 +38,19 @@ interface PatientDetailProps {
 const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
   // Run diagnosis algorithm to get detailed criteria checks
   const diagnosis = checkCriteria(patient);
+
+  const handlePrint = async () => {
+    try {
+      await Printer.print({
+        content: document.body.innerHTML,
+        type: 'html'
+      });
+    } catch (error) {
+      console.error('Print failed:', error);
+      // Fallback to window.print() for web
+      window.print();
+    }
+  };
 
   const DetailRow = ({ label, value, isValid }: { label: string, value: string | undefined, isValid?: boolean }) => (
     <div className={`p-4 rounded-lg border ${isValid === false ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-100'}`}>
@@ -25,13 +63,14 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
 
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-8 animate-fadeIn">
-      <button onClick={onBack} className="mb-6 flex items-center text-gray-500 hover:text-ayur-600 transition-colors font-medium">
+      <PrintStyles />
+      <button onClick={onBack} className="mb-6 flex items-center text-gray-500 hover:text-ayur-600 transition-colors font-medium print-hide">
         <ArrowLeft className="w-5 h-5 mr-2" /> Back to List
       </button>
 
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden print:shadow-none print:border-none print:rounded-none">
         {/* Header */}
-        <div className="bg-ayur-600 text-white p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div className="bg-ayur-600 text-white p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center print:p-4">
             <div>
                 <h1 className="text-3xl font-bold mb-2">{patient.demographics.name}</h1>
                 <div className="flex flex-wrap gap-4 text-ayur-100 text-sm">
@@ -40,13 +79,13 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                     <span className="opacity-75">Date: {new Date(patient.createdAt).toLocaleDateString()}</span>
                 </div>
             </div>
-            <button onClick={() => window.print()} className="mt-4 md:mt-0 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-sm flex items-center text-sm font-semibold transition-colors">
-                <Printer className="w-4 h-4 mr-2" /> Print Record
+            <button onClick={handlePrint} className="mt-4 md:mt-0 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-sm flex items-center text-sm font-semibold transition-colors">
+                <PrinterIcon className="w-4 h-4 mr-2" /> Print Record
             </button>
         </div>
 
         {/* Diagnostic Result Banner */}
-        <div className={`p-6 border-b ${diagnosis.isPositive ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+        <div className={`p-6 border-b print:p-4 ${diagnosis.isPositive ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
             <div className="flex items-start">
                 {diagnosis.isPositive ? (
                     <CheckCircle className="w-8 h-8 text-green-600 mt-1 flex-shrink-0" />
@@ -76,9 +115,9 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
             </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3">
+        <div className="grid grid-cols-1 lg:grid-cols-3 print:grid-cols-1">
             {/* Left Column: Clinical Info */}
-            <div className="lg:col-span-2 p-6 md:p-8 space-y-8">
+            <div className="lg:col-span-2 p-6 md:p-8 space-y-8 print:p-4">
                 
                 {/* Questionnaire Data */}
                 <section>
@@ -101,32 +140,32 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-4">
-                        <DetailRow 
-                            label="2. Type of Pain" 
-                            value={patient.symptoms.painTypes.join(', ')} 
+                    <div className="grid grid-cols-1 gap-4 print:gap-2">
+                        <DetailRow
+                            label="2. Type of Pain"
+                            value={patient.symptoms.painTypes.join(', ')}
                             isValid={diagnosis.criteria.painType}
                         />
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                            <DetailRow 
-                                label="3. Swelling" 
-                                value={`${patient.symptoms.swelling} ${patient.symptoms.swelling !== 'Never' ? `(Since: ${patient.symptoms.swellingDuration})` : ''}`} 
+
+                        <div className="grid grid-cols-2 gap-4 print:grid-cols-1 print:gap-2">
+                            <DetailRow
+                                label="3. Swelling"
+                                value={`${patient.symptoms.swelling} ${patient.symptoms.swelling !== 'Never' ? `(Since: ${patient.symptoms.swellingDuration})` : ''}`}
                                 isValid={diagnosis.criteria.swelling}
                             />
-                            <DetailRow 
-                                label="4. Stiffness" 
-                                value={`${patient.symptoms.stiffness} ${patient.symptoms.stiffness === 'Yes' ? `(${patient.symptoms.stiffnessDuration})` : ''}`} 
+                            <DetailRow
+                                label="4. Stiffness"
+                                value={`${patient.symptoms.stiffness} ${patient.symptoms.stiffness === 'Yes' ? `(${patient.symptoms.stiffnessDuration})` : ''}`}
                                 isValid={diagnosis.criteria.stiffness}
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-4 print:grid-cols-1 print:gap-2">
                              <DetailRow label="5. Crepitus" value={patient.symptoms.crepitus} isValid={diagnosis.criteria.crepitus} />
                              <DetailRow label="6. Shifting Pain" value={patient.symptoms.shiftingPain} isValid={diagnosis.criteria.shiftingPain} />
                         </div>
-                        
-                        <div className="grid grid-cols-3 gap-4">
+
+                        <div className="grid grid-cols-3 gap-4 print:grid-cols-1 print:gap-2">
                              <DetailRow label="7. Warmth" value={patient.symptoms.warmth} isValid={diagnosis.criteria.warmth} />
                              <DetailRow label="8. Fever" value={patient.symptoms.fever} isValid={diagnosis.criteria.fever} />
                              <DetailRow label="9. Discoloration" value={patient.symptoms.discoloration} isValid={diagnosis.criteria.discoloration} />
@@ -150,10 +189,10 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                         ))}
                     </div>
                     {patient.labs.xrayImage && (
-                        <div className="mt-4">
-                            <p className="text-sm font-semibold text-gray-600 mb-2">X-Ray Image</p>
-                            <img src={patient.labs.xrayImage} alt="Xray" className="max-h-64 rounded-lg border shadow-sm" />
-                            {patient.labs.xrayReport && <p className="text-xs text-gray-500 mt-2">File: {patient.labs.xrayReport}</p>}
+                        <div className="mt-4 print:mt-2">
+                            <p className="text-sm font-semibold text-gray-600 mb-2 print:mb-1">X-Ray Image</p>
+                            <img src={patient.labs.xrayImage} alt="Xray" className="max-h-64 rounded-lg border shadow-sm print:max-h-none print:w-full print:border print:shadow-none" />
+                            {patient.labs.xrayReport && <p className="text-xs text-gray-500 mt-2 print:mt-1">File: {patient.labs.xrayReport}</p>}
                         </div>
                     )}
                 </section>
@@ -164,7 +203,7 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                         Affected Joints (Q11)
                         {!diagnosis.criteria.affectedJoints && <span className="block text-xs font-normal mt-1">(Must include Knee, Spine, or Hip)</span>}
                     </h3>
-                    <div className={`bg-white rounded-xl shadow-sm p-2 ${diagnosis.criteria.affectedJoints ? '' : 'border-2 border-red-300'}`}>
+                    <div className={`bg-white rounded-xl shadow-sm p-2 print:p-1 ${diagnosis.criteria.affectedJoints ? '' : 'border-2 border-red-300'}`}>
                         <BodyMap selectedJoints={patient.affectedJoints} onChange={() => {}} readOnly />
                     </div>
                 </section>

@@ -148,24 +148,30 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSave, onCancel }) => {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-xl overflow-hidden max-w-4xl mx-auto my-6 border border-gray-100">
+    <div className="bg-white rounded-xl shadow-xl overflow-hidden max-w-4xl mx-auto my-2 sm:my-6 border border-gray-100">
       {/* Header Stepper */}
-      <div className="bg-ayur-50 p-6 border-b border-ayur-100">
-        <h2 className="text-2xl font-bold text-ayur-800 mb-4">New Patient Diagnosis</h2>
-        <div className="flex items-center space-x-4">
+      <div className="bg-ayur-50 p-4 sm:p-6 border-b border-ayur-100">
+        <h2 className="text-xl sm:text-2xl font-bold text-ayur-800 mb-3 sm:mb-4">New Patient Diagnosis</h2>
+        <div className="flex items-center space-x-2 sm:space-x-4">
           {[1, 2, 3, 4].map(s => (
             <div key={s} className={`flex items-center ${s !== 4 ? 'flex-1' : ''}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= s ? 'bg-ayur-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
+              <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm ${step >= s ? 'bg-ayur-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
                 {s}
               </div>
-              {s !== 4 && <div className={`h-1 flex-1 mx-2 rounded ${step > s ? 'bg-ayur-600' : 'bg-gray-200'}`} />}
+              {s !== 4 && <div className={`h-1 flex-1 mx-1 sm:mx-2 rounded ${step > s ? 'bg-ayur-600' : 'bg-gray-200'}`} />}
             </div>
           ))}
         </div>
-        <div className="flex justify-between text-xs mt-2 text-gray-500 font-medium">
+        <div className="hidden sm:flex justify-between text-xs mt-2 text-gray-500 font-medium">
             <span>Demographics</span>
             <span>Questionnaire</span>
             <span>Joint Map</span>
+            <span>Labs</span>
+        </div>
+        <div className="sm:hidden flex justify-between text-xs mt-2 text-gray-500 font-medium px-1">
+            <span>Demo</span>
+            <span>Quest</span>
+            <span>Map</span>
             <span>Labs</span>
         </div>
       </div>
@@ -212,7 +218,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSave, onCancel }) => {
 
         {/* Step 2: Questionnaire (Questions 1-10) */}
         {step === 2 && (
-          <div className="space-y-8 animate-fadeIn max-w-4xl mx-auto">
+          <div className="space-y-6 sm:space-y-8 animate-fadeIn max-w-4xl mx-auto">
             
             {/* Q1 */}
             <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
@@ -229,26 +235,26 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSave, onCancel }) => {
                 </div>
                 
                 {symptoms.hasJointPain === 'Yes' && (
-                    <div className="pl-4 border-l-4 border-ayur-200 space-y-4 animate-fadeIn">
+                    <div className="pl-2 sm:pl-4 border-l-4 border-ayur-200 space-y-3 sm:space-y-4 animate-fadeIn">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-600 mb-1">Since (Time)</label>
-                            <input type="text" value={symptoms.painDuration} onChange={(e) => setSymptoms({...symptoms, painDuration: e.target.value})} className="w-full p-2 border rounded" placeholder="e.g. 2 months" />
+                            <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">Since (Time)</label>
+                            <input type="text" value={symptoms.painDuration} onChange={(e) => setSymptoms({...symptoms, painDuration: e.target.value})} className="w-full p-2 border rounded text-sm" placeholder="e.g. 2 months" />
                         </div>
                          <div>
-                            <label className="block text-sm font-semibold text-gray-600 mb-1">Onset</label>
-                            <div className="flex space-x-4">
+                            <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">Onset</label>
+                            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
                                 <label className="flex items-center cursor-pointer">
                                     <input type="radio" name="onset" value="Sudden" checked={symptoms.painOnset === 'Sudden'} onChange={() => setSymptoms({...symptoms, painOnset: 'Sudden'})} className="w-4 h-4 text-ayur-600" />
-                                    <span className="ml-2">Sudden</span>
+                                    <span className="ml-2 text-sm">Sudden</span>
                                 </label>
                                 <label className="flex items-center cursor-pointer">
                                     <input type="radio" name="onset" value="Gradual" checked={symptoms.painOnset === 'Gradual'} onChange={() => setSymptoms({...symptoms, painOnset: 'Gradual'})} className="w-4 h-4 text-ayur-600" />
-                                    <span className="ml-2">Gradual</span>
+                                    <span className="ml-2 text-sm">Gradual</span>
                                 </label>
                             </div>
                         </div>
                         <div>
-                             <label className="block text-sm font-semibold text-gray-600 mb-2">Intensity</label>
+                             <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-2">Intensity</label>
                              <VasScale value={symptoms.painIntensity} onChange={(v) => setSymptoms({...symptoms, painIntensity: v})} />
                         </div>
                     </div>
@@ -276,49 +282,48 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSave, onCancel }) => {
             )}
 
             {/* Q3 */}
-            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                <label className="block text-lg font-bold text-gray-800 mb-3">3. Is there swelling in joints?</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-gray-50 p-3 sm:p-5 rounded-lg border border-gray-200">
+                <label className="block text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">3. Is there swelling in joints?</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-2">
                         {['Always', 'Occasionally', 'Never'].map(opt => (
                             <label key={opt} className="flex items-center cursor-pointer">
-                                <input type="radio" name="swelling" value={opt} checked={symptoms.swelling === opt} onChange={() => setSymptoms({...symptoms, swelling: opt as any})} className="w-5 h-5 text-ayur-600" />
-                                <span className="ml-2">{opt}</span>
+                                <input type="radio" name="swelling" value={opt} checked={symptoms.swelling === opt} onChange={() => setSymptoms({...symptoms, swelling: opt as any})} className="w-4 h-4 sm:w-5 sm:h-5 text-ayur-600" />
+                                <span className="ml-2 text-sm sm:text-base">{opt}</span>
                             </label>
                         ))}
                     </div>
                     {symptoms.swelling && symptoms.swelling !== 'Never' && (
                         <div>
-                            <label className="block text-sm font-semibold text-gray-600 mb-1">Since (Time)</label>
-                            <input type="text" value={symptoms.swellingDuration} onChange={(e) => setSymptoms({...symptoms, swellingDuration: e.target.value})} className="w-full p-2 border rounded" placeholder="e.g. 2 weeks" />
+                            <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">Since (Time)</label>
+                            <input type="text" value={symptoms.swellingDuration} onChange={(e) => setSymptoms({...symptoms, swellingDuration: e.target.value})} className="w-full p-2 border rounded text-sm" placeholder="e.g. 2 weeks" />
                         </div>
                     )}
                 </div>
             </div>
 
             {/* Q4 */}
-            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                <label className="block text-lg font-bold text-gray-800 mb-3">4. Do your joints feel stiff, especially after rest or in the morning?</label>
-                <div className="flex space-x-6 mb-4">
+            <div className="bg-gray-50 p-3 sm:p-5 rounded-lg border border-gray-200">
+                <label className="block text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">4. Do your joints feel stiff, especially after rest or in the morning?</label>
+                <div className="flex flex-col sm:flex-row sm:space-x-6 space-y-2 sm:space-y-0 mb-3 sm:mb-4">
                     <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="stiffness" value="Yes" checked={symptoms.stiffness === 'Yes'} onChange={() => setSymptoms({...symptoms, stiffness: 'Yes'})} className="w-5 h-5 text-ayur-600" />
-                        <span className="ml-2 font-medium">Yes</span>
+                        <input type="radio" name="stiffness" value="Yes" checked={symptoms.stiffness === 'Yes'} onChange={() => setSymptoms({...symptoms, stiffness: 'Yes'})} className="w-4 h-4 sm:w-5 sm:h-5 text-ayur-600" />
+                        <span className="ml-2 font-medium text-sm sm:text-base">Yes</span>
                     </label>
                     <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="stiffness" value="No" checked={symptoms.stiffness === 'No'} onChange={() => setSymptoms({...symptoms, stiffness: 'No'})} className="w-5 h-5 text-ayur-600" />
-                        <span className="ml-2 font-medium">No</span>
+                        <input type="radio" name="stiffness" value="No" checked={symptoms.stiffness === 'No'} onChange={() => setSymptoms({...symptoms, stiffness: 'No'})} className="w-4 h-4 sm:w-5 sm:h-5 text-ayur-600" />
+                        <span className="ml-2 font-medium text-sm sm:text-base">No</span>
                     </label>
                 </div>
                 {symptoms.stiffness === 'Yes' && (
-                    <div className="pl-4 border-l-4 border-ayur-200 space-y-2 animate-fadeIn">
+                    <div className="pl-2 sm:pl-4 border-l-4 border-ayur-200 space-y-2 animate-fadeIn">
                         <label className="flex items-center cursor-pointer">
-                             {/* Fix: Corrected property name and added symptoms object to spread */}
                              <input type="radio" name="stiffnessDur" value="Less than 1Hr" checked={symptoms.stiffnessDuration === 'Less than 1Hr'} onChange={() => setSymptoms({...symptoms, stiffnessDuration: 'Less than 1Hr'})} className="w-4 h-4 text-ayur-600" />
-                             <span className="ml-2">Less than 1 Hour</span>
+                             <span className="ml-2 text-sm">Less than 1 Hour</span>
                         </label>
                         <label className="flex items-center cursor-pointer">
                              <input type="radio" name="stiffnessDur" value="More than 1Hr" checked={symptoms.stiffnessDuration === 'More than 1Hr'} onChange={() => setSymptoms({...symptoms, stiffnessDuration: 'More than 1Hr'})} className="w-4 h-4 text-ayur-600" />
-                             <span className="ml-2">More than 1 Hour</span>
+                             <span className="ml-2 text-sm">More than 1 Hour</span>
                         </label>
                     </div>
                 )}
@@ -340,16 +345,16 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSave, onCancel }) => {
             </div>
 
             {/* Q6 */}
-             <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                <label className="block text-lg font-bold text-gray-800 mb-3">6. Does pain and swelling that you have shifts from one joint to another?</label>
-                <div className="flex space-x-6">
+             <div className="bg-gray-50 p-3 sm:p-5 rounded-lg border border-gray-200">
+                <label className="block text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">6. Does pain and swelling that you have shifts from one joint to another?</label>
+                <div className="flex flex-col sm:flex-row sm:space-x-6 space-y-2 sm:space-y-0">
                     <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="shifting" value="Yes" checked={symptoms.shiftingPain === 'Yes'} onChange={() => setSymptoms({...symptoms, shiftingPain: 'Yes'})} className="w-5 h-5 text-ayur-600" />
-                        <span className="ml-2 font-medium">Yes</span>
+                        <input type="radio" name="shifting" value="Yes" checked={symptoms.shiftingPain === 'Yes'} onChange={() => setSymptoms({...symptoms, shiftingPain: 'Yes'})} className="w-4 h-4 sm:w-5 sm:h-5 text-ayur-600" />
+                        <span className="ml-2 font-medium text-sm sm:text-base">Yes</span>
                     </label>
                     <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="shifting" value="No" checked={symptoms.shiftingPain === 'No'} onChange={() => setSymptoms({...symptoms, shiftingPain: 'No'})} className="w-5 h-5 text-ayur-600" />
-                        <span className="ml-2 font-medium">No</span>
+                        <input type="radio" name="shifting" value="No" checked={symptoms.shiftingPain === 'No'} onChange={() => setSymptoms({...symptoms, shiftingPain: 'No'})} className="w-4 h-4 sm:w-5 sm:h-5 text-ayur-600" />
+                        <span className="ml-2 font-medium text-sm sm:text-base">No</span>
                     </label>
                 </div>
             </div>
@@ -370,16 +375,16 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSave, onCancel }) => {
             </div>
 
             {/* Q8 */}
-            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                <label className="block text-lg font-bold text-gray-800 mb-3">8. Do you get fever episodes along with joint symptoms?</label>
-                <div className="flex space-x-6">
+            <div className="bg-gray-50 p-3 sm:p-5 rounded-lg border border-gray-200">
+                <label className="block text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">8. Do you get fever episodes along with joint symptoms?</label>
+                <div className="flex flex-col sm:flex-row sm:space-x-6 space-y-2 sm:space-y-0">
                     <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="fever" value="Yes" checked={symptoms.fever === 'Yes'} onChange={() => setSymptoms({...symptoms, fever: 'Yes'})} className="w-5 h-5 text-ayur-600" />
-                        <span className="ml-2 font-medium">Yes</span>
+                        <input type="radio" name="fever" value="Yes" checked={symptoms.fever === 'Yes'} onChange={() => setSymptoms({...symptoms, fever: 'Yes'})} className="w-4 h-4 sm:w-5 sm:h-5 text-ayur-600" />
+                        <span className="ml-2 font-medium text-sm sm:text-base">Yes</span>
                     </label>
                     <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="fever" value="No" checked={symptoms.fever === 'No'} onChange={() => setSymptoms({...symptoms, fever: 'No'})} className="w-5 h-5 text-ayur-600" />
-                        <span className="ml-2 font-medium">No</span>
+                        <input type="radio" name="fever" value="No" checked={symptoms.fever === 'No'} onChange={() => setSymptoms({...symptoms, fever: 'No'})} className="w-4 h-4 sm:w-5 sm:h-5 text-ayur-600" />
+                        <span className="ml-2 font-medium text-sm sm:text-base">No</span>
                     </label>
                 </div>
             </div>
@@ -400,18 +405,18 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSave, onCancel }) => {
             </div>
 
             {/* Q10 */}
-            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                <label className="block text-lg font-bold text-gray-800 mb-3">10. What do you feel after applying oil or massage to the painful joint?</label>
+            <div className="bg-gray-50 p-3 sm:p-5 rounded-lg border border-gray-200">
+                <label className="block text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">10. What do you feel after applying oil or massage to the painful joint?</label>
                 <div className="space-y-2">
                     {[
-                        'Pain reduces and movement improves', 
-                        'No change', 
+                        'Pain reduces and movement improves',
+                        'No change',
                         'Pain increases after oil or massage',
                         "I haven't tried oil or massage"
                     ].map(opt => (
                          <label key={opt} className="flex items-center cursor-pointer">
-                            <input type="radio" name="oilEffect" value={opt} checked={symptoms.oilMassageEffect === opt} onChange={() => setSymptoms({...symptoms, oilMassageEffect: opt})} className="w-5 h-5 text-ayur-600" />
-                            <span className="ml-2">{opt}</span>
+                            <input type="radio" name="oilEffect" value={opt} checked={symptoms.oilMassageEffect === opt} onChange={() => setSymptoms({...symptoms, oilMassageEffect: opt})} className="w-4 h-4 sm:w-5 sm:h-5 text-ayur-600" />
+                            <span className="ml-2 text-sm sm:text-base">{opt}</span>
                         </label>
                     ))}
                 </div>
@@ -488,28 +493,28 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSave, onCancel }) => {
       </div>
 
       {/* Footer Actions */}
-      <div className="bg-gray-50 p-6 border-t border-gray-200 flex justify-between items-center">
+      <div className="bg-gray-50 p-4 sm:p-6 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
         {step > 1 ? (
-            <button onClick={() => setStep(step - 1)} className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors">
-                <ArrowLeft className="w-5 h-5 mr-2" /> Back
+            <button onClick={() => setStep(step - 1)} className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm sm:text-base">
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Back
             </button>
         ) : (
-            <button onClick={onCancel} className="px-4 py-2 text-red-500 hover:text-red-700 font-medium transition-colors">
+            <button onClick={onCancel} className="px-4 py-2 text-red-500 hover:text-red-700 font-medium transition-colors text-sm sm:text-base">
                 Cancel
             </button>
         )}
 
         {step < 4 ? (
-            <button 
-                onClick={() => setStep(step + 1)} 
+            <button
+                onClick={() => setStep(step + 1)}
                 disabled={step === 1 && !demographics.name}
-                className={`flex items-center px-6 py-2 rounded-lg font-bold text-white shadow-md transition-all ${step === 1 && !demographics.name ? 'bg-gray-400 cursor-not-allowed' : 'bg-ayur-600 hover:bg-ayur-700'}`}
+                className={`flex items-center px-4 sm:px-6 py-2 rounded-lg font-bold text-white shadow-md transition-all text-sm sm:text-base ${step === 1 && !demographics.name ? 'bg-gray-400 cursor-not-allowed' : 'bg-ayur-600 hover:bg-ayur-700'}`}
             >
-                Next <ArrowRight className="w-5 h-5 ml-2" />
+                Next <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
             </button>
         ) : (
-            <button onClick={handlePreSave} className="flex items-center px-6 py-2 bg-ayur-600 hover:bg-ayur-700 text-white rounded-lg font-bold shadow-md transition-colors">
-                <Save className="w-5 h-5 mr-2" /> Save Record
+            <button onClick={handlePreSave} className="flex items-center px-4 sm:px-6 py-2 bg-ayur-600 hover:bg-ayur-700 text-white rounded-lg font-bold shadow-md transition-colors text-sm sm:text-base">
+                <Save className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Save Record
             </button>
         )}
       </div>
