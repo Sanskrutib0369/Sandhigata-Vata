@@ -9,6 +9,7 @@ function App() {
   const [view, setView] = useState<AppView>(AppView.LIST);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [storageRefreshTrigger, setStorageRefreshTrigger] = useState(0);
 
   // Load patients on mount
   useEffect(() => {
@@ -18,6 +19,7 @@ function App() {
   const refreshPatients = () => {
     const list = getPatients();
     setPatients([...list]);
+    setStorageRefreshTrigger(prev => prev + 1); // Trigger storage refresh
   };
 
   const handleSavePatient = (patient: Patient) => {
@@ -80,6 +82,7 @@ function App() {
                 onSelect={handleSelectPatient} 
                 onDelete={handleDeletePatient}
                 onNew={handleNewPatient}
+                storageRefreshTrigger={storageRefreshTrigger}
             />
         )}
 

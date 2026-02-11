@@ -2,17 +2,20 @@ import React from 'react';
 import { Patient } from '../types';
 import { User, Calendar, Activity, ChevronRight, Trash2 } from 'lucide-react';
 import { diagnoseSandhigataVata } from '../services/diagnosisService';
+import StorageStatus from './StorageStatus';
 
 interface PatientListProps {
   patients: Patient[];
   onSelect: (patient: Patient) => void;
   onDelete: (id: string) => void;
   onNew: () => void;
+  storageRefreshTrigger?: number;
 }
 
-const PatientList: React.FC<PatientListProps> = ({ patients, onSelect, onDelete, onNew }) => {
+const PatientList: React.FC<PatientListProps> = ({ patients, onSelect, onDelete, onNew, storageRefreshTrigger }) => {
   return (
     <div className="max-w-6xl mx-auto p-4">
+      <StorageStatus refreshTrigger={storageRefreshTrigger} />
       <div className="flex justify-between items-center mb-8">
         <div>
             <h1 className="text-3xl font-bold text-ayur-900">Patient Records</h1>
