@@ -244,17 +244,100 @@
     margin-bottom: 5pt !important;
   }
   
-  /* Page breaks */
+  /* Enhanced print styles for medical reports */
   @page {
-    margin: 20pt;
+    margin: 15mm;
+    size: A4;
+    @top-center {
+      content: "Sandhigata Vata Diagnosis Report";
+      font-size: 10pt;
+      color: #2d6e2d;
+    }
+    @bottom-center {
+      content: "Page " counter(page);
+      font-size: 8pt;
+      color: #666;
+    }
   }
   
-  /* Ensure content doesn't go to upper side */
-  * {
-    position: static !important;
-    float: none !important;
+  /* Print-specific styles */
+  @media print {
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    
+    body {
+      font-size: 11pt !important;
+      line-height: 1.3 !important;
+      color: #000 !important;
+      background: #fff !important;
+      margin: 0 !important;
+      padding: 15pt !important;
+    }
+    
+    h1 { font-size: 16pt !important; margin-bottom: 10pt !important; }
+    h2 { font-size: 14pt !important; margin-bottom: 8pt !important; }
+    h3 { font-size: 12pt !important; margin-bottom: 6pt !important; }
+    
+    .no-print {
+      display: none !important;
+    }
+    
+    .print-break {
+      page-break-after: always !important;
+    }
+    
+    .print-avoid-break {
+      page-break-inside: avoid !important;
+    }
+    
+    /* Ensure content doesn't shift upward */
+    * {
+      position: static !important;
+      float: none !important;
+      clear: both !important;
+      transform: none !important;
+    }
+    
+    /* Mobile print optimization */
+    @media print and (max-width: 600px) {
+      body {
+        font-size: 10pt !important;
+        padding: 10pt !important;
+      }
+      
+      h1 { font-size: 14pt !important; }
+      h2 { font-size: 12pt !important; }
+      h3 { font-size: 11pt !important; }
+    }
   }
-}
+  
+  /* Mobile optimization */
+  @media (max-width: 768px) {
+    body {
+      font-size: 14px;
+    }
+  }
+  
+  /* WebView optimization */
+  .webview {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+  }
+  
+  /* Print preview optimization */
+  @media screen {
+    .print-preview {
+      background: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin: 20px auto;
+      max-width: 800px;
+      padding: 20px;
+    }
+  }
 </style>
 </head>
   <body class="bg-gray-50 text-gray-800">
