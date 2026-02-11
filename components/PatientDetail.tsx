@@ -39,12 +39,44 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
   // Run diagnosis algorithm to get detailed criteria checks
   const diagnosis = checkCriteria(patient);
 
-  const handlePrint = async () => {
+  const generatePrintContent = () => {
+    const printContent = document.getElementById('print-content');
+    if (printContent) {
+      return printContent.innerHTML;
+    }
+    return '';
+  };
+
+  const handlePrint = () => {
     try {
-      await Printer.print({
-        content: document.body.innerHTML,
-        type: 'html'
-      });
+      // Check if running in WebView
+      const isWebView = /(wv|WebView)/.test(navigator.userAgent) || 
+                        window.hasOwnProperty('_cordovaNative') || 
+                        window.hasOwnProperty('webkit') ||
+                        (window as any).cordova;
+      
+      if (isWebView) {
+        // Use Cordova printer plugin for WebView
+        (window as any).cordova.plugins.printer.print({
+          documents: [{
+            content: generatePrintContent(),
+            name: `sandhigata-vata-report-${new Date().toISOString().split('T')[0]}.pdf`,
+            type: 'pdf'
+          }]
+        }, (success: any) => {
+          if (success) {
+            alert('Print job sent successfully');
+          } else {
+            alert('Print failed');
+          }
+        }, (error: any) => {
+          console.error('WebView print error:', error);
+          alert('Print error: ' + error);
+        });
+      } else {
+        // Regular browser print
+        window.print();
+      }
     } catch (error) {
       console.error('Print failed:', error);
       // Fallback to window.print() for web
