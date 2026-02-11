@@ -40,11 +40,231 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
   const diagnosis = checkCriteria(patient);
 
   const generatePrintContent = () => {
-    const printContent = document.getElementById('print-content');
-    if (printContent) {
-      return printContent.innerHTML;
-    }
-    return '';
+    // Generate HTML content directly from patient data
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Sandhigata Vata Report</title>
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 20px; 
+                    line-height: 1.4;
+                    color: black;
+                    background: white;
+                }
+                .header { 
+                    text-align: center; 
+                    margin-bottom: 20px; 
+                    background: #2d6e2d; 
+                    color: white; 
+                    padding: 15px;
+                }
+                .header h1 { 
+                    font-size: 18pt; 
+                    margin-bottom: 5pt; 
+                }
+                .section { 
+                    margin-bottom: 20pt; 
+                    page-break-inside: avoid; 
+                }
+                .section h2 { 
+                    font-size: 14pt; 
+                    font-weight: bold; 
+                    margin-bottom: 10pt; 
+                    border-bottom: 1pt solid black; 
+                    padding-bottom: 5pt; 
+                    color: black;
+                }
+                .data-row { 
+                    display: flex; 
+                    justify-content: space-between; 
+                    padding: 8pt; 
+                    border-bottom: 1pt solid black; 
+                }
+                .label { 
+                    font-weight: bold; 
+                    color: black; 
+                }
+                .value { 
+                    color: black; 
+                }
+                .positive { 
+                    color: black; 
+                    font-weight: bold; 
+                }
+                .negative { 
+                    color: black; 
+                    font-weight: bold; 
+                }
+                .joints { 
+                    display: flex; 
+                    flex-wrap: wrap; 
+                    gap: 4px; 
+                    margin: 10pt 0; 
+                }
+                .joint { 
+                    background: #f0f0f0; 
+                    border: 1pt solid black; 
+                    padding: 2px 4px; 
+                    font-size: 10px; 
+                }
+                .lab-item { 
+                    border: 1pt solid black; 
+                    padding: 8pt; 
+                    margin: 5pt 0; 
+                    text-align: center; 
+                }
+                img { 
+                    max-width: 300pt; 
+                    height: auto; 
+                    border: 1pt solid black; 
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>${patient.demographics.name}</h1>
+                <div>${patient.demographics.age} Years, ${patient.demographics.gender}</div>
+                <div>ID: ${patient.demographics.opdIpdNo || 'N/A'}</div>
+                <div>Date: ${new Date(patient.createdAt).toLocaleDateString()}</div>
+            </div>
+            
+            <div class="section">
+                <h2>Diagnosis Result</h2>
+                <div class="data-row">
+                    <span class="label">Result:</span>
+                    <span class="${diagnosis.isPositive ? 'positive' : 'negative'}">
+                        ${diagnosis.isPositive ? 'POSITIVE for Sandhigata Vata' : 'NEGATIVE for Sandhigata Vata'}
+                    </span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Details:</span>
+                    <span class="value">
+                        ${diagnosis.isPositive 
+                            ? 'All strict diagnostic criteria for Sandhigata Vata are met.' 
+                            : 'The patient does not meet all criteria. Failed criteria are highlighted in red below.'}
+                    </span>
+                </div>
+                ${!diagnosis.isPositive && diagnosis.reasons.length > 0 ? `
+                <div class="data-row">
+                    <span class="label">Unmet Criteria:</span>
+                    <span class="value">
+                        ${diagnosis.reasons.join(', ')}
+                    </span>
+                </div>
+                ` : ''}
+            </div>
+            
+            <div class="section">
+                <h2>Questionnaire Responses</h2>
+                <div class="data-row">
+                    <span class="label">1. Joint Pain:</span>
+                    <span class="${!diagnosis.criteria.jointPain ? 'negative' : ''}">${patient.symptoms.hasJointPain}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Pain Duration:</span>
+                    <span class="value">${patient.symptoms.painDuration}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Pain Onset:</span>
+                    <span class="${!diagnosis.criteria.onset ? 'negative' : ''}">${patient.symptoms.painOnset}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Pain Intensity:</span>
+                    <span class="value">${patient.symptoms.painIntensity}/10</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Pain Types:</span>
+                    <span class="value">${patient.symptoms.painTypes.join(', ')}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Swelling:</span>
+                    <span class="${!diagnosis.criteria.swelling ? 'negative' : ''}">${patient.symptoms.swelling} ${patient.symptoms.swelling !== 'Never' ? `(Since: ${patient.symptoms.swellingDuration})` : ''}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Stiffness:</span>
+                    <span class="${!diagnosis.criteria.stiffness ? 'negative' : ''}">${patient.symptoms.stiffness} ${patient.symptoms.stiffness === 'Yes' ? `(${patient.symptoms.stiffnessDuration})` : ''}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Crepitus:</span>
+                    <span class="${!diagnosis.criteria.crepitus ? 'negative' : ''}">${patient.symptoms.crepitus}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Shifting Pain:</span>
+                    <span class="${!diagnosis.criteria.shiftingPain ? 'negative' : ''}">${patient.symptoms.shiftingPain}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Warmth:</span>
+                    <span class="${!diagnosis.criteria.warmth ? 'negative' : ''}">${patient.symptoms.warmth}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Fever:</span>
+                    <span class="${!diagnosis.criteria.fever ? 'negative' : ''}">${patient.symptoms.fever}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Discoloration:</span>
+                    <span class="${!diagnosis.criteria.discoloration ? 'negative' : ''}">${patient.symptoms.discoloration}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Oil/Massage Effect:</span>
+                    <span class="${!diagnosis.criteria.oilEffect ? 'negative' : ''}">${patient.symptoms.oilMassageEffect}</span>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Affected Joints</h2>
+                <div class="joints">
+                    ${patient.affectedJoints.map(joint => `<span class="joint">${joint}</span>`).join('')}
+                </div>
+            </div>
+            
+            ${Object.entries(patient.labs).filter(([key]) => key !== 'xrayImage' && key !== 'xrayReport').length > 0 ? `
+                <div class="section">
+                    <h2>Laboratory Results</h2>
+                    ${Object.entries(patient.labs).filter(([key]) => key !== 'xrayImage' && key !== 'xrayReport').map(([key, value]) => `
+                        <div class="lab-item">
+                            <div class="label">${key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                            <div class="value">${value || 'N/A'}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : ''}
+            
+            ${patient.labs.xrayImage ? `
+                <div class="section">
+                    <h2>X-Ray Image</h2>
+                    <div style="text-align: center;">
+                        <img src="${patient.labs.xrayImage}" alt="X-ray" />
+                        ${patient.labs.xrayReport ? `<div style="margin-top: 10px; font-size: 10px;">File: ${patient.labs.xrayReport}</div>` : ''}
+                    </div>
+                </div>
+            ` : ''}
+            
+            <div class="section">
+                <h2>Patient Details</h2>
+                <div class="data-row">
+                    <span class="label">Address:</span>
+                    <span class="value">${patient.demographics.address || 'N/A'}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Occupation:</span>
+                    <span class="value">${patient.demographics.occupation || 'N/A'}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Contact:</span>
+                    <span class="value">${patient.demographics.contact || 'N/A'}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">OPD/IPD No:</span>
+                    <span class="value">${patient.demographics.opdIpdNo || 'N/A'}</span>
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
   };
 
   const handlePrint = () => {
