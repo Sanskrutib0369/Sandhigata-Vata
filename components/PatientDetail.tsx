@@ -276,32 +276,413 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                         (window as any).cordova;
       
       if (isWebView) {
-        // Use Cordova printer plugin for WebView
+        // Use Cordova printer plugin for WebView with clean options
         (window as any).cordova.plugins.printer.print({
           documents: [{
-            content: generatePrintContent(),
-            name: `sandhigata-vata-report-${new Date().toISOString().split('T')[0]}.pdf`,
+            content: generateCleanPrintContent(),
+            name: `Sandhigata-Vata-Report-${patient.demographics.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`,
             type: 'pdf'
-          }]
+          }],
+          options: {
+            duplex: 'none',
+            copies: 1,
+            color: true,
+            border: true,
+            orientation: 'portrait'
+          }
         }, (success: any) => {
           if (success) {
-            alert('Print job sent successfully');
+            alert('✅ Report sent to printer successfully!');
           } else {
-            alert('Print failed');
+            alert('❌ Print failed. Please check printer connection.');
           }
         }, (error: any) => {
           console.error('WebView print error:', error);
-          alert('Print error: ' + error);
+          alert('❌ Print error: ' + (error || 'Unknown error'));
         });
       } else {
-        // Regular browser print
-        window.print();
+        // Regular browser print with clean content
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          printWindow.document.write(generateCleanPrintContent());
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+          printWindow.close();
+        } else {
+          alert('Please allow popups for printing');
+        }
       }
     } catch (error) {
       console.error('Print failed:', error);
-      // Fallback to window.print() for web
-      window.print();
+      alert('❌ Print not available. Please try again.');
     }
+  };
+
+  const generateCleanPrintContent = () => {
+    // Generate clean, mobile-optimized HTML content
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Sandhigata Vata Diagnosis Report</title>
+            <style>
+                * { 
+                    margin: 0; 
+                    padding: 0; 
+                    box-sizing: border-box; 
+                }
+                body { 
+                    font-family: 'Segoe UI', Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 15px; 
+                    line-height: 1.5; 
+                    color: #000; 
+                    background: #fff; 
+                    font-size: 12px;
+                }
+                .report-header { 
+                    text-align: center; 
+                    margin-bottom: 20px; 
+                    background: linear-gradient(135deg, #2d6e2d, #4a8c4a); 
+                    color: white; 
+                    padding: 20px; 
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .report-header h1 { 
+                    font-size: 20px; 
+                    margin-bottom: 8px; 
+                    font-weight: 600;
+                }
+                .report-header .subtitle {
+                    font-size: 14px;
+                    opacity: 0.9;
+                }
+                .patient-info {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 10px;
+                    margin-bottom: 20px;
+                    background: #f8f9fa;
+                    padding: 15px;
+                    border-radius: 6px;
+                    border-left: 4px solid #2d6e2d;
+                }
+                .info-item {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 5px 0;
+                    border-bottom: 1px solid #e9ecef;
+                }
+                .info-label {
+                    font-weight: 600;
+                    color: #495057;
+                }
+                .info-value {
+                    color: #212529;
+                }
+                .section { 
+                    margin-bottom: 25px; 
+                    page-break-inside: avoid; 
+                    background: white;
+                    border-radius: 6px;
+                    overflow: hidden;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+                .section-header { 
+                    background: #2d6e2d; 
+                    color: white; 
+                    padding: 12px 15px; 
+                    font-size: 14px; 
+                    font-weight: 600;
+                    border-bottom: 2px solid #1e4a1e;
+                }
+                .section-content {
+                    padding: 15px;
+                }
+                .diagnosis-result {
+                    text-align: center;
+                    padding: 20px;
+                    border-radius: 6px;
+                    margin: 15px 0;
+                    font-weight: 600;
+                    font-size: 16px;
+                }
+                .positive {
+                    background: #d4edda;
+                    color: #155724;
+                    border: 2px solid #c3e6cb;
+                }
+                .negative {
+                    background: #f8d7da;
+                    color: #721c24;
+                    border: 2px solid #f5c6cb;
+                }
+                .criteria-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 10px;
+                    margin-top: 15px;
+                }
+                .criteria-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 8px;
+                    border-radius: 4px;
+                    border-left: 3px solid #28a745;
+                    background: #f8f9fa;
+                }
+                .criteria-item.failed {
+                    border-left-color: #dc3545;
+                    background: #fff5f5;
+                }
+                .criteria-icon {
+                    margin-right: 8px;
+                    font-size: 16px;
+                }
+                .criteria-text {
+                    flex: 1;
+                    font-size: 11px;
+                }
+                .joints-container {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    margin-top: 10px;
+                }
+                .joint-tag {
+                    background: #e9ecef;
+                    border: 1px solid #ced4da;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 10px;
+                    font-weight: 500;
+                }
+                .lab-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 12px;
+                    margin-top: 10px;
+                }
+                .lab-item {
+                    background: #f8f9fa;
+                    border: 1px solid #e9ecef;
+                    padding: 12px;
+                    border-radius: 4px;
+                    text-align: center;
+                }
+                .lab-label {
+                    font-weight: 600;
+                    color: #495057;
+                    font-size: 11px;
+                    margin-bottom: 4px;
+                }
+                .lab-value {
+                    color: #212529;
+                    font-size: 12px;
+                }
+                .xray-container {
+                    text-align: center;
+                    margin: 15px 0;
+                }
+                .xray-image {
+                    max-width: 100%;
+                    max-height: 300px;
+                    border: 2px solid #e9ecef;
+                    border-radius: 4px;
+                }
+                .xray-filename {
+                    margin-top: 8px;
+                    font-size: 10px;
+                    color: #6c757d;
+                    font-style: italic;
+                }
+                .footer {
+                    text-align: center;
+                    margin-top: 30px;
+                    padding-top: 15px;
+                    border-top: 1px solid #e9ecef;
+                    color: #6c757d;
+                    font-size: 10px;
+                }
+                @media print {
+                    body { margin: 0; padding: 10px; }
+                    .section { page-break-inside: avoid; }
+                    .report-header { page-break-after: avoid; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="report-header">
+                <h1>🏥 Sandhigata Vata Diagnosis Report</h1>
+                <div class="subtitle">Ayurvedic Joint Disorder Assessment</div>
+            </div>
+            
+            <div class="patient-info">
+                <div class="info-item">
+                    <span class="info-label">Patient Name:</span>
+                    <span class="info-value">${patient.demographics.name}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Age & Gender:</span>
+                    <span class="info-value">${patient.demographics.age} Years, ${patient.demographics.gender}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">OPD/IPD No:</span>
+                    <span class="info-value">${patient.demographics.opdIpdNo || 'N/A'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Report Date:</span>
+                    <span class="info-value">${new Date(patient.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">🔍 Diagnosis Result</div>
+                <div class="section-content">
+                    <div class="diagnosis-result ${diagnosis.isPositive ? 'positive' : 'negative'}">
+                        ${diagnosis.isPositive ? '✅ POSITIVE for Sandhigata Vata' : '❌ NEGATIVE for Sandhigata Vata'}
+                    </div>
+                    <div class="criteria-grid">
+                        <div class="criteria-item ${!diagnosis.criteria.jointPain ? 'failed' : ''}">
+                            <span class="criteria-icon">${diagnosis.criteria.jointPain ? '✓' : '✗'}</span>
+                            <span class="criteria-text">Joint Pain Present</span>
+                        </div>
+                        <div class="criteria-item ${!diagnosis.criteria.onset ? 'failed' : ''}">
+                            <span class="criteria-icon">${diagnosis.criteria.onset ? '✓' : '✗'}</span>
+                            <span class="criteria-text">Gradual Onset</span>
+                        </div>
+                        <div class="criteria-item ${!diagnosis.criteria.swelling ? 'failed' : ''}">
+                            <span class="criteria-icon">${diagnosis.criteria.swelling ? '✓' : '✗'}</span>
+                            <span class="criteria-text">Joint Swelling</span>
+                        </div>
+                        <div class="criteria-item ${!diagnosis.criteria.stiffness ? 'failed' : ''}">
+                            <span class="criteria-icon">${diagnosis.criteria.stiffness ? '✓' : '✗'}</span>
+                            <span class="criteria-text">Morning Stiffness</span>
+                        </div>
+                        <div class="criteria-item ${!diagnosis.criteria.crepitus ? 'failed' : ''}">
+                            <span class="criteria-icon">${diagnosis.criteria.crepitus ? '✓' : '✗'}</span>
+                            <span class="criteria-text">Crepitus Sound</span>
+                        </div>
+                        <div class="criteria-item ${!diagnosis.criteria.shiftingPain ? 'failed' : ''}">
+                            <span class="criteria-icon">${diagnosis.criteria.shiftingPain ? '✓' : '✗'}</span>
+                            <span class="criteria-text">Shifting Pain</span>
+                        </div>
+                        <div class="criteria-item ${!diagnosis.criteria.warmth ? 'failed' : ''}">
+                            <span class="criteria-icon">${diagnosis.criteria.warmth ? '✓' : '✗'}</span>
+                            <span class="criteria-text">Joint Warmth</span>
+                        </div>
+                        <div class="criteria-item ${!diagnosis.criteria.fever ? 'failed' : ''}">
+                            <span class="criteria-icon">${diagnosis.criteria.fever ? '✓' : '✗'}</span>
+                            <span class="criteria-text">No Fever</span>
+                        </div>
+                        <div class="criteria-item ${!diagnosis.criteria.discoloration ? 'failed' : ''}">
+                            <span class="criteria-icon">${diagnosis.criteria.discoloration ? '✓' : '✗'}</span>
+                            <span class="criteria-text">No Discoloration</span>
+                        </div>
+                        <div class="criteria-item ${!diagnosis.criteria.oilEffect ? 'failed' : ''}">
+                            <span class="criteria-icon">${diagnosis.criteria.oilEffect ? '✓' : '✗'}</span>
+                            <span class="criteria-text">Oil Massage Relief</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">📋 Clinical Assessment</div>
+                <div class="section-content">
+                    <div class="criteria-grid">
+                        <div class="criteria-item">
+                            <span class="criteria-icon">📊</span>
+                            <span class="criteria-text">Pain Intensity: ${patient.symptoms.painIntensity}/10</span>
+                        </div>
+                        <div class="criteria-item">
+                            <span class="criteria-icon">⏱️</span>
+                            <span class="criteria-text">Duration: ${patient.symptoms.painDuration}</span>
+                        </div>
+                        <div class="criteria-item">
+                            <span class="criteria-icon">🎯</span>
+                            <span class="criteria-text">Pain Types: ${patient.symptoms.painTypes.join(', ')}</span>
+                        </div>
+                        <div class="criteria-item">
+                            <span class="criteria-icon">🌅</span>
+                            <span class="criteria-text">Stiffness: ${patient.symptoms.stiffness} ${patient.symptoms.stiffness === 'Yes' ? `(${patient.symptoms.stiffnessDuration})` : ''}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">🦴 Affected Joints</div>
+                <div class="section-content">
+                    <div class="joints-container">
+                        ${patient.affectedJoints.map(joint => `<span class="joint-tag">${joint}</span>`).join('')}
+                    </div>
+                </div>
+            </div>
+            
+            ${Object.entries(patient.labs).filter(([key]) => key !== 'xrayImage' && key !== 'xrayReport').length > 0 ? `
+                <div class="section">
+                    <div class="section-header">🧪 Laboratory Results</div>
+                    <div class="section-content">
+                        <div class="lab-grid">
+                            ${Object.entries(patient.labs).filter(([key]) => key !== 'xrayImage' && key !== 'xrayReport').map(([key, value]) => `
+                                <div class="lab-item">
+                                    <div class="lab-label">${key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                                    <div class="lab-value">${value || 'N/A'}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
+            
+            ${patient.labs.xrayImage ? `
+                <div class="section">
+                    <div class="section-header">📷 X-Ray Report</div>
+                    <div class="section-content">
+                        <div class="xray-container">
+                            <img src="${patient.labs.xrayImage}" alt="X-ray" class="xray-image" />
+                            ${patient.labs.xrayReport ? `<div class="xray-filename">File: ${patient.labs.xrayReport}</div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
+            
+            <div class="section">
+                <div class="section-header">👤 Patient Details</div>
+                <div class="section-content">
+                    <div class="criteria-grid">
+                        <div class="criteria-item">
+                            <span class="criteria-icon">📍</span>
+                            <span class="criteria-text">Address: ${patient.demographics.address || 'N/A'}</span>
+                        </div>
+                        <div class="criteria-item">
+                            <span class="criteria-icon">💼</span>
+                            <span class="criteria-text">Occupation: ${patient.demographics.occupation || 'N/A'}</span>
+                        </div>
+                        <div class="criteria-item">
+                            <span class="criteria-icon">📞</span>
+                            <span class="criteria-text">Contact: ${patient.demographics.contact || 'N/A'}</span>
+                        </div>
+                        <div class="criteria-item">
+                            <span class="criteria-icon">🆔</span>
+                            <span class="criteria-text">ID: ${patient.demographics.opdIpdNo || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <div>📅 Generated on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                <div>🏥 Sandhigata Vata Diagnosis System</div>
+            </div>
+        </body>
+        </html>
+    `;
   };
 
   const DetailRow = ({ label, value, isValid }: { label: string, value: string | undefined, isValid?: boolean }) => (
